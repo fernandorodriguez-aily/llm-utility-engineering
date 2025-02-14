@@ -1,0 +1,50 @@
+[project]
+name = "hallucinate-less-experiments"
+version = "0.1.0"
+description = "hallucinate-less-experiments"
+readme = "README.md"
+requires-python = ">=3.10.6, <3.11"
+dependencies = [ "aily-ai-brain>=2.0.13", "jupyter>=1.1.1", "scipy>=1.15.1", "toml>=0.10.2",]
+[[project.authors]]
+name = "Aily AI Team"
+
+[dependency-groups]
+dev = [ "pre-commit>=3.1.1", "pytest>=7.2.2", "pytest-cov>=4.0.0",]
+lint = [ "ruff>=0.7.1", "mypy>=1.13.0", "yamllint>=1.35.1",]
+
+[tool.ruff]
+line-length = 88
+indent-width = 4
+
+[tool.mypy]
+ignore_missing_imports = true
+warn_no_return = false
+disallow_untyped_defs = false
+allow_redefinition = true
+
+[tool.isort]
+profile = "black"
+src_paths = [ "src",]
+line_length = 88
+order_by_type = true
+force_single_line = false
+combine_as_imports = true
+
+[tool.uv]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.lint]
+select = [ "B", "C", "D", "D213", "E", "F", "I", "W",]
+ignore = [ "D212",]
+task-tags = [ "TODO", "todo",]
+
+[tool.ruff.lint.pycodestyle]
+ignore-overlong-task-comments = true
+
+[tool.ruff.lint.mccabe]
+max-complexity = 15
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

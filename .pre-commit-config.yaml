@@ -1,0 +1,81 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-docstring-first
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: check-added-large-files
+        exclude: uv.lock
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+      - id: black
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.1.1
+    hooks:
+      - id: flake8
+        additional_dependencies:
+          - flake8-bugbear
+          - flake8-import-order
+          - importlib-metadata>=6.0.0
+        args:
+          - --max-line-length=88
+          - --ignore=I,W503,E203  # W503 collides with black formatting, E203 is whitespace before ':'
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.14.1
+    hooks:
+      - id: mypy
+        additional_dependencies:
+          - types-requests
+          - types-PyYAML
+        args:
+          - --explicit-package-bases  # Add this flag to resolve the duplicate module issue
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        name: isort (python)
+        args: ["--settings-path", "pyproject.toml"]
+
+  - repo: local
+    hooks:
+      - id: remove-index-url
+        name: Remove index-url from pyproject.toml
+        entry: python
+        language: python
+        files: ^pyproject\.toml$
+        additional_dependencies: [ 'toml' ]
+        types: [ toml ]
+        pass_filenames: false
+        args:
+          - -c
+          - |
+            import toml
+            config = toml.load('pyproject.toml')
+            if 'tool' in config and 'uv' in config['tool']:
+                config['tool']['uv'].pop('index-url', None)
+            with open('pyproject.toml', 'w') as f:
+                toml.dump(config, f)
+
+      - id: check-no-index-url
+        name: Check no index-url in pyproject.toml
+        entry: python
+        language: python
+        files: ^pyproject\.toml$
+        additional_dependencies: [ 'toml' ]
+        types: [ toml ]
+        pass_filenames: false
+        args:
+          - -c
+          - |
+            import toml
+            config = toml.load('pyproject.toml')
+            assert 'index-url' not in config.get('tool', {}).get('uv', {}), 'index-url found in pyproject.toml'
